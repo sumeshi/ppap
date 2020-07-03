@@ -1,8 +1,8 @@
 # ppap
 
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
-[![PyPI version](https://badge.fury.io/py/ppap.svg)](https://badge.fury.io/py/ppap)
-[![Python Versions](https://img.shields.io/pypi/pyversions/ppap.svg)](https://pypi.org/project/ppap/)
+[![PyPI version](https://badge.fury.io/py/ppapzip.svg)](https://badge.fury.io/py/ppapzip)
+[![Python Versions](https://img.shields.io/pypi/pyversions/ppapzip.svg)](https://pypi.org/project/ppapzip/)
 
 Utility to simplify zip file encryption using RSA keys.  
 ~ for eradicate ppap ~
