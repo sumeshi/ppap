@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ppapzip"
-version = "1.0.0"
+version = "1.0.1"
 description = "File encryption/decryption utility using RSA key"
 authors = ["sumeshi <j15322sn@gmail.com>"]
 license = "MIT"
