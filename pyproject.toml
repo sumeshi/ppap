@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "ppap"
+name = "ppap-zip"
 version = "1.0.0"
 description = "File encryption/decryption utility using RSA key"
 authors = ["sumeshi <j15322sn@gmail.com>"]
