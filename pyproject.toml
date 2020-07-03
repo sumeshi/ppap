@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "ppap-zip"
+name = "ppapzip"
 version = "1.0.0"
 description = "File encryption/decryption utility using RSA key"
 authors = ["sumeshi <j15322sn@gmail.com>"]
@@ -12,7 +12,7 @@ homepage = "https://github.com/sumeshi/ppap"
 keywords = ['zip', 'RSA']
 
 [tool.poetry.scripts]
-ppap = 'ppap:ppap'
+ppap = 'ppapzip:ppap'
 
 [tool.poetry.dependencies]
 python = "^3.8"
