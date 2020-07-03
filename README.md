@@ -1,6 +1,10 @@
 # ppap
 
-Utility to simplify zip file encryption using RSA keys.
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
+[![PyPI version](https://badge.fury.io/py/ppap.svg)](https://badge.fury.io/py/ppap)
+[![Python Versions](https://img.shields.io/pypi/pyversions/ppap.svg)](https://pypi.org/project/ppap/)
+
+Utility to simplify zip file encryption using RSA keys.  
 ~ for eradicate ppap ~
 
 ## Overview
@@ -23,7 +27,7 @@ Original Meaning in Japanese.
 - Protocol
 ```
 
-* = 暗号化 = Encryption
+\* = 暗号化 = Encryption
 
 [JIPDEC - S/MIME利用の最新動向](https://itc.jipdec.or.jp/common/images/4_20170227_otaishi.pdf)
 
