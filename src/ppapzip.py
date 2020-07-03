@@ -156,7 +156,7 @@ def ppap():
     parser = argparse.ArgumentParser(description="PPAP")
     parser.add_argument("filepath_list", nargs="+", help="Input Path")
     parser.add_argument("--out", "-o", type=str, default="", help="Destination Path")
-    parser.add_argument("--key", help="Public/Private key file(RSA).")
+    parser.add_argument("--key", required=True, help="Public/Private key file(RSA).")
 
     # encrypt
     parser.add_argument("--encrypt", "-e", action="store_true", help="Encryption flag")
