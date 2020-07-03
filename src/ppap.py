@@ -33,14 +33,16 @@ def decrypt_pass(passphrase: bytes, key: RsaKey) -> str:
     return private_cipher.decrypt(passphrase).decode()
 
 
-def encrypt(filepath_list: List[str], key_path: str, now: str):
+def encrypt(filepath_list: List[str], key_path: str, now: str, output_path: str = None):
+    current = Path(".").resolve()
+
     # generate encrypted_key
     zipkey = get_random_bytes(128).hex()
     crypted = encrypt_pass(zipkey, load_key(Path(key_path)))
 
     try:
         # create tarball
-        tempdir = Path(f"./temp-ppap-{get_now()}").resolve()
+        tempdir = Path(current, f"temp-ppap-{get_now()}").resolve()
         tarball_path = compress_contents(filepath_list, tempdir)
 
         # zip with passphrase
@@ -59,8 +61,16 @@ def encrypt(filepath_list: List[str], key_path: str, now: str):
         encrypted_key_path = tempdir / Path(".encrypted_key")
         encrypted_key_path.write_text(crypted.hex())
 
+        if output_path:
+            if Path(output_path).is_dir():
+                dest = Path(output_path, f"ppap-{get_now()}").resolve()
+            else:
+                dest = Path(output_path)
+        else:
+            dest = Path(tempdir.parent, f"ppap-{get_now()}").resolve()
+
         # compress all files
-        shutil.make_archive(f"./ppap-{get_now()}", "zip", root_dir=tempdir)
+        shutil.make_archive(str(dest), "zip", root_dir=tempdir)
 
     except Exception:
         traceback.print_exc()
@@ -100,10 +110,11 @@ def compress_contents(filepath_list: List[str], tempdir: Path) -> Path:
     return tarball_path.with_suffix(".tar")
 
 
-def decrypt(file_path: str, key_path: str, passphrase: str):
+def decrypt(file_path: str, key_path: str, passphrase: str, output_path: str = None):
+    current = Path(".").resolve()
     try:
         # unpack
-        tempdir = Path(f"./temp-ppap-{get_now()}").resolve()
+        tempdir = Path(current, f"temp-ppap-{get_now()}").resolve()
         shutil.unpack_archive(file_path, str(tempdir), "zip")
 
         # decrypt key
@@ -120,7 +131,15 @@ def decrypt(file_path: str, key_path: str, passphrase: str):
         )
 
         decrypted_contents = tempdir / Path("ppap_contents.tar")
-        dest = Path(tempdir.parent, f"ppap-{get_now()}").resolve()
+
+        if output_path:
+            if Path(output_path).resolve().is_dir():
+                dest = Path(tempdir.parent, f"ppap-{get_now()}").resolve()
+            else:
+                dest = Path(current, output_path).resolve()
+        else:
+            dest = Path(tempdir.parent, f"ppap-{get_now()}").resolve()
+
         shutil.unpack_archive(
             str(decrypted_contents), dest, "tar",
         )
@@ -140,11 +159,17 @@ def ppap():
     parser.add_argument("--key", help="Public/Private key file(RSA).")
 
     # encrypt
-    parser.add_argument("--encrypt", "-e", action="store_true", help="")
+    parser.add_argument("--encrypt", "-e", action="store_true", help="Encryption flag")
 
     # decrypt
-    parser.add_argument("--decrypt", "-d", action="store_true", help="")
-    parser.add_argument("--passphrase", "-p", type=str, default="", help="")
+    parser.add_argument("--decrypt", "-d", action="store_true", help="Decryption flag")
+    parser.add_argument(
+        "--passphrase",
+        "-p",
+        type=str,
+        default="",
+        help="If using passphrase your private key",
+    )
     args = parser.parse_args()
 
     try:
@@ -157,10 +182,15 @@ def ppap():
             )
 
         if args.encrypt:
-            encrypt(args.filepath_list, args.key, now=get_now())
+            encrypt(args.filepath_list, args.key, now=get_now(), output_path=args.out)
         else:
             if len(args.filepath_list) == 1:
-                decrypt(args.filepath_list[0], args.key, passphrase=args.passphrase)
+                decrypt(
+                    args.filepath_list[0],
+                    args.key,
+                    passphrase=args.passphrase,
+                    output_path=args.out,
+                )
             else:
                 raise Exception(
                     "Exception: Only one file can be selected for decryption."
