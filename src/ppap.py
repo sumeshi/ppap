@@ -1,4 +1,5 @@
 # coding: utf-8
+import time
 import shutil
 import argparse
 from typing import List
@@ -38,7 +39,7 @@ def encrypt(filepath_list: List[str], now: str):
     crypted = encrypt_pass(zipkey, load_key(Path("./keys/test.pub")))
 
     # create tarball
-    tempdir = Path(f"./temp-ppap-{get_now()}")
+    tempdir = Path(f"./temp-ppap-{get_now()}").resolve()
     tarball_path = compress_contents(filepath_list, tempdir)
 
     # zip with passphrase
@@ -96,9 +97,31 @@ def compress_contents(filepath_list: List[str], tempdir: Path) -> Path:
     return tarball_path.with_suffix(".tar")
 
 
-def decrypt(crypted):
-    decrypted = decrypt_pass(bytes.fromhex(crypted), load_key(Path("./keys/test")))
-    print(decrypted)
+def decrypt(file_path: str):
+    # unpack
+    tempdir = Path(f"./temp-ppap-{get_now()}").resolve()
+    shutil.unpack_archive(file_path, str(tempdir), "zip")
+
+    # decrypt key
+    encrypted_key = tempdir / Path(".encrypted_key")
+    decrypted_key = decrypt_pass(
+        bytes.fromhex(encrypted_key.read_text()), load_key(Path("./keys/test"))
+    )
+
+    # decrypt file
+    encrypted_contents = tempdir / Path("ppap_encrypted_contents.zip")
+    pyminizip.uncompress(
+        str(encrypted_contents), decrypted_key, str(tempdir), int(),
+    )
+
+    decrypted_contents = tempdir / Path("ppap_contents.tar")
+    dest = Path(tempdir.parent, f"ppap-{get_now()}").resolve()
+    shutil.unpack_archive(
+        str(decrypted_contents), dest, "tar",
+    )
+
+    # delete tempfiles
+    shutil.rmtree(tempdir)
 
 
 def ppap():
@@ -128,7 +151,8 @@ def ppap():
         if args.encrypt:
             encrypt(args.filepath_list, now=get_now())
         else:
-            decrypt()
+            for filepath in args.filepath_list:
+                decrypt(filepath)
 
     except Exception as e:
         print(e)
